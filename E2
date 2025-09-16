@@ -1,0 +1,23 @@
+SELECT
+    -- Column A: The original, unaltered data
+    [Provision Date] AS OriginalProvisionDate,
+
+    -- Column B: The refined date, formatted for the Excel report
+    FORMAT([Provision Date], 'yyyy/MM/dd') AS FormattedDate,
+
+    -- Column C: Extracts just the day number
+    DAY([Provision Date]) AS DayNumber,
+
+    -- Column D: Gets the full month name and year
+    DATENAME(month, [Provision Date]) + ' ' + DATENAME(year, [Provision Date]) AS MonthYear,
+
+    -- Column E: The Merchant Name
+    [Merchant Name],
+
+    -- Column F: The Confirmed status
+    [Confirmed],
+
+    -- Column G: The Voucher Amount
+    [Voucher amount]
+FROM
+    Example2All;
