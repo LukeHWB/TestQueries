@@ -1,4 +1,4 @@
--- Replace 'YourTableName' with your actual table name (e.g., Example2All)
+-- Replace 'Example2All' with your actual table name (e.g., Example2All)
 DECLARE @Counter INT = 1;
 
 WHILE @Counter <= 50 -- Change this number to create more or fewer rows
@@ -10,26 +10,28 @@ BEGIN
     DECLARE @IsReversed BIT = CASE WHEN @IsConfirmed = 1 AND RAND() > 0.9 THEN 1 ELSE 0 END; -- 10% chance of reversal if confirmed
     DECLARE @VoucherAmount NUMERIC(18,0) = CHOOSE(CAST(RAND()*4+1 AS INT), 50, 100, 150, 200);
     DECLARE @ProductID NVARCHAR(50) = 'PROD-' + CAST(CAST(RAND()*1000+100 AS INT) AS NVARCHAR(10));
+    DECLARE @MerchantName NVARCHAR(50) = 'ExampleName';
     DECLARE @MerchantCity NVARCHAR(50) = CHOOSE(CAST(RAND()*3+1 AS INT), 'Durban', 'Johannesburg', 'Cape Town');
 
-    INSERT INTO YourTableName (
+    INSERT INTO Example2All (
         [Provision Date],
         [Confirmation Date],
         [Provisioned],
         [Confirmed],
-        [Reveresed], -- Note: Typo in your screenshot, matching it here. Should be 'Reversed'
+        [Reversed],
         [Reversal Reason],
         [Voucher amount],
         [ProductID],
         [Originator Insitution ID],
         [Originator institution name],
         [Terminal ID],
+        [Merchant Name],
         [Merchant City],
         [Merchant Region],
         [Merchant District],
         [Request Client ID],
         [InstitutionID],
-        [Transanction Identifier],
+        [Transaction Identifier],
         [Vendor Trans],
         [Voucher Status],
         [Redeemed date],
@@ -45,8 +47,9 @@ BEGIN
         @VoucherAmount,
         @ProductID,
         'INST-001',
-        'Standard Bank',
+        'Bank1',
         'TERM-' + CAST(CAST(RAND()*899+100 AS INT) AS NVARCHAR(10)),
+        @MerchantName,
         @MerchantCity,
         CASE 
             WHEN @MerchantCity = 'Durban' THEN 'KwaZulu-Natal'
@@ -67,4 +70,4 @@ BEGIN
 END;
 
 -- Query the table to see the newly generated data
-SELECT * FROM YourTableName;
+SELECT * FROM Example2All;
