@@ -1,0 +1,49 @@
+-- Replace 'YourTableName' with the actual name of your table
+DECLARE @Counter INT = 1;
+
+WHILE @Counter <= 25
+BEGIN
+    -- Generate a random date between 2025-09-08 and 2025-09-12
+    DECLARE @RandomDate DATE = DATEADD(day, CAST(RAND() * 5 AS INT), '2025-09-08');
+    
+    -- CORRECTED LINE: First CAST @RandomDate to DATETIME2, then add the seconds
+    DECLARE @CreateDateTime DATETIME2 = DATEADD(second, CAST(RAND() * 86400 AS INT), CAST(@RandomDate AS DATETIME2));
+
+    -- Declare variables for other random data
+    DECLARE @VoucherID NUMERIC(18,0) = 74005 + @Counter;
+    DECLARE @VoucherAmount DECIMAL(18,0) = CAST(RAND() * 200 + 50 AS INT);
+    DECLARE @IsRedeemed BIT = CASE WHEN RAND() > 0.5 THEN 1 ELSE 0 END;
+    DECLARE @IsSuspended BIT = CASE WHEN RAND() > 0.9 THEN 1 ELSE 0 END;
+    DECLARE @AccountNo NVARCHAR(10) = CHOOSE(CAST(RAND()*5+1 AS INT), 'ACC-101', 'ACC-102', 'ACC-103', 'ACC-104', 'ACC-105');
+    DECLARE @VendorID NVARCHAR(10) = CHOOSE(CAST(RAND()*3+1 AS INT), 'VEN-01', 'VEN-02', 'VEN-03');
+
+    INSERT INTO YourTableName (
+        VoucherID,
+        VoucherAmount,
+        CreateDateTime,
+        RedeemedDate,
+        ExpiryDate,
+        AccountNo,
+        Suspended,
+        VendorID,
+        SuspendedReason,
+        VendorTrans
+    )
+    VALUES (
+        @VoucherID,
+        @VoucherAmount,
+        @CreateDateTime,
+        CASE WHEN @IsRedeemed = 1 THEN DATEADD(day, 1, @CreateDateTime) ELSE NULL END, -- Redeem date is 1 day after creation if redeemed
+        DATEADD(day, 30, @CreateDateTime), -- Expiry is 30 days after creation
+        @AccountNo,
+        @IsSuspended,
+        @VendorID,
+        CASE WHEN @IsSuspended = 1 THEN 'Random review flag' ELSE NULL END,
+        'TRANS-' + CAST(@VoucherID AS NVARCHAR(10))
+    );
+
+    SET @Counter = @Counter + 1;
+END;
+
+-- Query the table to see the new rows plus the original ones
+SELECT * FROM YourTableName;
