@@ -1,0 +1,70 @@
+-- Replace 'YourTableName' with your actual table name (e.g., Example2All)
+DECLARE @Counter INT = 1;
+
+WHILE @Counter <= 50 -- Change this number to create more or fewer rows
+BEGIN
+    -- Declare variables for random data
+    DECLARE @ProvisionDate DATETIME2 = DATEADD(day, -CAST(RAND() * 30 AS INT), GETDATE()); -- Random date in the last 30 days
+    DECLARE @IsProvisioned BIT = 1;
+    DECLARE @IsConfirmed BIT = CASE WHEN RAND() > 0.3 THEN 1 ELSE 0 END; -- 70% chance of being confirmed
+    DECLARE @IsReversed BIT = CASE WHEN @IsConfirmed = 1 AND RAND() > 0.9 THEN 1 ELSE 0 END; -- 10% chance of reversal if confirmed
+    DECLARE @VoucherAmount NUMERIC(18,0) = CHOOSE(CAST(RAND()*4+1 AS INT), 50, 100, 150, 200);
+    DECLARE @ProductID NVARCHAR(50) = 'PROD-' + CAST(CAST(RAND()*1000+100 AS INT) AS NVARCHAR(10));
+    DECLARE @MerchantCity NVARCHAR(50) = CHOOSE(CAST(RAND()*3+1 AS INT), 'Durban', 'Johannesburg', 'Cape Town');
+
+    INSERT INTO YourTableName (
+        [Provision Date],
+        [Confirmation Date],
+        [Provisioned],
+        [Confirmed],
+        [Reveresed], -- Note: Typo in your screenshot, matching it here. Should be 'Reversed'
+        [Reversal Reason],
+        [Voucher amount],
+        [ProductID],
+        [Originator Insitution ID],
+        [Originator institution name],
+        [Terminal ID],
+        [Merchant City],
+        [Merchant Region],
+        [Merchant District],
+        [Request Client ID],
+        [InstitutionID],
+        [Transanction Identifier],
+        [Vendor Trans],
+        [Voucher Status],
+        [Redeemed date],
+        [Account No]
+    )
+    VALUES (
+        @ProvisionDate,
+        CASE WHEN @IsConfirmed = 1 THEN DATEADD(minute, CAST(RAND()*60 AS INT), @ProvisionDate) ELSE NULL END,
+        @IsProvisioned,
+        @IsConfirmed,
+        @IsReversed,
+        CASE WHEN @IsReversed = 1 THEN 'Customer request' ELSE NULL END,
+        @VoucherAmount,
+        @ProductID,
+        'INST-001',
+        'Standard Bank',
+        'TERM-' + CAST(CAST(RAND()*899+100 AS INT) AS NVARCHAR(10)),
+        @MerchantCity,
+        CASE 
+            WHEN @MerchantCity = 'Durban' THEN 'KwaZulu-Natal'
+            WHEN @MerchantCity = 'Johannesburg' THEN 'Gauteng'
+            ELSE 'Western Cape'
+        END,
+        'Central',
+        CAST(RAND()*100000 AS INT),
+        CAST(RAND()*100 AS INT),
+        NEWID(), -- Generates a unique identifier
+        'VT-' + CAST(CAST(RAND()*1000000 AS INT) AS NVARCHAR(20)),
+        @IsConfirmed, -- Assuming Voucher Status is the same as Confirmed status
+        CASE WHEN @IsConfirmed = 1 AND RAND() > 0.4 THEN DATEADD(day, CAST(RAND()*5 AS INT), @ProvisionDate) ELSE NULL END,
+        CAST(RAND()*10000000 AS INT)
+    );
+
+    SET @Counter = @Counter + 1;
+END;
+
+-- Query the table to see the newly generated data
+SELECT * FROM YourTableName;
