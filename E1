@@ -1,0 +1,17 @@
+SELECT
+    -- Column A: Formats the date into 'YYYY/MM/DD'
+    FORMAT(CreateDateTime, 'yyyy/MM/dd') AS FormattedDate,
+
+    -- Column B: Extracts just the day number from the date
+    DAY(CreateDateTime) AS DayNumber,
+
+    -- Column C: Gets the full month name and year
+    DATENAME(month, CreateDateTime) + ' ' + DATENAME(year, CreateDateTime) AS MonthYear,
+
+    -- Column D: Adds the vendor name as a static text value
+    'Example1' AS VendorName,
+
+    -- Column E: Includes the 'Suspended' status from your table
+    Suspended
+FROM
+    dbo.Example1; -- Using your actual table name
