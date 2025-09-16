@@ -1,0 +1,16 @@
+SELECT
+    -- First, we define our groups
+    CAST([Provision Date] AS DATE) AS ProvisionDate,
+    [Merchant Name],
+
+    -- Next, we calculate the aggregates for each group
+    SUM([Voucher amount]) AS TotalVoucherValue,
+    COUNT(*) AS NumberOfVouchers
+FROM
+    Example2All
+GROUP BY
+    CAST([Provision Date] AS DATE), -- Group all rows with the same date together
+    [Merchant Name]                -- Then, group by the merchant within that date
+ORDER BY
+    ProvisionDate,                 -- It's good practice to sort the results
+    [Merchant Name];
